@@ -1,0 +1,93 @@
+{% extends "main.html" %}
+
+{% block content %}
+  <main>
+    <div class="container">
+
+    <div class="card table-responsive ">
+    <center class="text-warning"><h2>ORDER SUMMARY</h2></center>
+    <table class="table  table-hover">
+        <thead>
+        <tr>
+            <th scope="col">Image</th>
+            <th id="sm" scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order_item in object.items.all %}
+        <tr>
+            {% comment %} <td scope="row">{{ forloop.counter }}</td> {% endcomment %}
+            <td><img class="row-image" width=50px height=50px src="{{ order_item.item.image }}"></td>
+            <td id="sm">{{ order_item.item.name }}</td>
+            <td>{{ order_item.item.price }}</td>
+            <td>
+                <a href="{% url 'remove-single-item-from-cart' order_item.item.slug %}" ><span class="badge badge-warning text-light"><b>-</b></span>
+                {{ order_item.quantity }}
+                <a href="{% url 'add-to-cart' order_item.item.slug %}"><span class="badge badge-primary"><b>+</b></span></a>
+                <a style='color: red;' href="{% url 'remove-from-cart' order_item.item.slug %}">
+                    <span class="badge badge-danger">X</b></span>
+                </a>
+            </td>
+            <td>
+            {% if order_item.item.discount_price %}
+                ksh.{{ order_item.get_total_discount_item_price }}
+                <span class="badge badge-warning"><s>{{ order_item.get_amount_saved }}</s></span>
+            {% else %}
+                ksh.{{ order_item.get_total_item_price }}
+            {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan='5'>Your cart is empty</td>
+        </tr>
+        <tr>
+            <td colspan="5">
+            <a class='btn btn-primary float-right' href='/'>Continue shopping</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if object.coupon %}
+        <tr>
+            <td colspan="4"><b>Coupon</b></td>
+            <td><b>-ksh{{ object.coupon.amount }}</b></td>
+        </tr>
+        {% endif %}
+        {% if object.get_total %}
+        <tr>
+            <td colspan="5">
+            <form method="POST" action="{% url 'lipa_na_mpesa'%}">
+                {% csrf_token %}
+                <div class="row">
+                    <center class="col-6">
+                        <div class="input-group mb-3"> 
+                            <input type="text"  name="PhoneNumber" value={{request.user}} class="form-control text-center"/>
+                        </div>
+                    </center>
+                    <center class="col-6">
+                        <div class="input-group mb-2"> 
+                            <input type="text"  name="Amount" class="form-control text-center" value={{ object.get_total }} readonly/>
+                        </div>
+                    </center>
+                </div>              
+        
+                <center class="d-flex justify-content-center mt-3 login_container">
+                        <input class="btn btn-warning" type="submit" value="Confirm Payments">&nbsp &nbsp &nbsp
+                        <a class='btn btn-secondary' href='/'>Continue shopping</
+                </center>
+            </form> 
+            </td>
+        </tr>
+        {% endif %}     
+        </tbody>
+    </table>
+    </div> 
+    </div> 
+  </main>
+
+{% endblock content %}
+
+

@@ -1,0 +1,47 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %} 
+<style>
+  p{
+    font-size:10px;
+  }
+  @media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+    .col-lg-2 {
+      width: 50%;
+      
+    }
+  }
+</style>
+<div class="row pt-0 m-2 mb-2"> 
+{% for item in items %}
+          <div class="col-lg-2 col-md-3 col-sm-4">
+            <a href="{{ item.get_absolute_url }}">
+              <div class="card mr-2 mb-2" >
+                <div class="view overlay">
+                  <img src="{{ item.image }}" class="card-img-top" style="height:100px;" > 
+                </div>
+                <div class="card-body text-center" style="height:100px;">
+                  <p class="p-0 m-0">
+                    <strong>
+                      <a  class="dark-grey-text">{{ item.name }}<br>
+                        <span class="badge badge-warning badge-pill {{ item.get_label_display }}-color ">VIEW</span>
+                      </a>
+                    </strong>
+                  </p>
+                  <p>
+                    <strong>Ksh
+                    {% if item.discount_price %}
+                    {{ item.discount_price }}
+                    {% else %}
+                    {{ item.price }}
+                    {% endif %}
+                    </strong>
+                  </p>
+                </div>
+              </div>
+            </a>  
+          </div>
+    {% endfor %}
+      </div>
+{% endblock content %}
